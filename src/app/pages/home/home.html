@@ -1,0 +1,9 @@
+<div class="container" *ngIf="user">
+  <h2>Bienvenue</h2>
+
+  <p><strong>Nom :</strong> {{ user.nom }}</p>
+  <p><strong>Prénom :</strong> {{ user.prenom }}</p>
+  <p><strong>Email :</strong> {{ user.email }}</p>
+
+  <button (click)="logout()">Se déconnecter</button>
+</div>
