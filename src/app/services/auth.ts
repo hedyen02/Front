@@ -1,8 +1,8 @@
-// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id?: number;
@@ -16,16 +16,16 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth'; // Port Spring Boot par défaut
+
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // Méthode d'inscription
+  // Register
   register(userData: User): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/register`, userData)
       .pipe(
         tap(response => {
-          // Stocker les informations utilisateur si nécessaire
           if (response && response.email) {
             localStorage.setItem('currentUser', JSON.stringify(response));
           }
@@ -33,13 +33,13 @@ export class AuthService {
       );
   }
 
-  // Méthode de connexion
+  // Login
   login(email: string, password: string): Observable<User> {
     const loginData = { email, password };
+
     return this.http.post<User>(`${this.apiUrl}/login`, loginData)
       .pipe(
         tap(response => {
-          // Stocker les informations utilisateur dans localStorage
           if (response && response.email) {
             localStorage.setItem('currentUser', JSON.stringify(response));
             localStorage.setItem('isLoggedIn', 'true');
@@ -48,19 +48,19 @@ export class AuthService {
       );
   }
 
-  // Méthode de déconnexion
+  // Logout
   logout(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('isLoggedIn');
     this.router.navigate(['/login']);
   }
 
-  // Vérifier si l'utilisateur est connecté
+  // Check login
   isLoggedIn(): boolean {
     return localStorage.getItem('isLoggedIn') === 'true';
   }
 
-  // Obtenir l'utilisateur courant
+  // Get user
   getCurrentUser(): User | null {
     const userStr = localStorage.getItem('currentUser');
     return userStr ? JSON.parse(userStr) : null;
